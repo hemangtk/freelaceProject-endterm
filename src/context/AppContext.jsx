@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState } from "react"
+import { createContext, useContext, useState, useEffect } from "react"
 
 // Create context
 const AppContext = createContext()
@@ -14,6 +14,45 @@ export const AppProvider = ({ children }) => {
   const [clients, setClients] = useState([])
   const [timeEntries, setTimeEntries] = useState([])
   const [activeTimer, setActiveTimer] = useState(null)
+
+  // Load data from localStorage on initial render
+  useEffect(() => {
+    const storedClients = localStorage.getItem("clients")
+    const storedProjects = localStorage.getItem("projects")
+    const storedTimeEntries = localStorage.getItem("timeEntries")
+
+    if (storedClients) {
+      setClients(JSON.parse(storedClients))
+    }
+
+    if (storedProjects) {
+      setProjects(JSON.parse(storedProjects))
+    }
+
+    if (storedTimeEntries) {
+      // Convert string dates back to Date objects
+      const parsedEntries = JSON.parse(storedTimeEntries)
+      const formattedEntries = parsedEntries.map((entry) => ({
+        ...entry,
+        startTime: new Date(entry.startTime),
+        endTime: new Date(entry.endTime),
+      }))
+      setTimeEntries(formattedEntries)
+    }
+  }, [])
+
+  // Save data to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("clients", JSON.stringify(clients))
+  }, [clients])
+
+  useEffect(() => {
+    localStorage.setItem("projects", JSON.stringify(projects))
+  }, [projects])
+
+  useEffect(() => {
+    localStorage.setItem("timeEntries", JSON.stringify(timeEntries))
+  }, [timeEntries])
 
   // Add a project
   const addProject = (project) => {
