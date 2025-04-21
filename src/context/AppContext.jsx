@@ -15,6 +15,19 @@ export const AppProvider = ({ children }) => {
   const [timeEntries, setTimeEntries] = useState([])
   const [activeTimer, setActiveTimer] = useState(null)
   const [invoices, setInvoices] = useState([])
+  
+  // Add user settings
+  const defaultSettings = {
+    theme: 'light',
+    dateFormat: 'MM/dd/yyyy',
+    currency: 'USD',
+    timeFormat: '12h',
+    defaultHourlyRate: 50,
+    autoStartTimer: false,
+    notificationsEnabled: true
+  };
+  
+  const [userSettings, setUserSettings] = useState(defaultSettings);
 
   // Load data from localStorage on initial render
   useEffect(() => {
@@ -22,6 +35,7 @@ export const AppProvider = ({ children }) => {
     const storedProjects = localStorage.getItem("projects")
     const storedTimeEntries = localStorage.getItem("timeEntries")
     const storedInvoices = localStorage.getItem("invoices")
+    const storedSettings = localStorage.getItem("userSettings")
 
     if (storedClients) {
       try {
@@ -66,6 +80,24 @@ export const AppProvider = ({ children }) => {
         setInvoices([])
       }
     }
+    
+    if (storedSettings) {
+      try {
+        const parsedSettings = JSON.parse(storedSettings)
+        setUserSettings(parsedSettings)
+        // Apply theme on initial load
+        if (parsedSettings.theme === 'dark') {
+          document.documentElement.classList.add('dark-theme')
+          document.documentElement.setAttribute('data-theme', 'dark')
+        } else {
+          document.documentElement.classList.remove('dark-theme')
+          document.documentElement.setAttribute('data-theme', 'light')
+        }
+      } catch (error) {
+        console.error("Error parsing user settings from localStorage:", error)
+        setUserSettings(defaultSettings)
+      }
+    }
   }, [])
 
   // Save clients to localStorage whenever it changes
@@ -95,6 +127,20 @@ export const AppProvider = ({ children }) => {
       localStorage.setItem("invoices", JSON.stringify(invoices))
     }
   }, [invoices])
+  
+  // Save user settings to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem("userSettings", JSON.stringify(userSettings))
+    
+    // Apply theme immediately when it changes
+    if (userSettings.theme === 'dark') {
+      document.documentElement.classList.add('dark-theme')
+      document.documentElement.setAttribute('data-theme', 'dark')
+    } else {
+      document.documentElement.classList.remove('dark-theme')
+      document.documentElement.setAttribute('data-theme', 'light')
+    }
+  }, [userSettings])
 
   // Client functions
   const addClient = (client) => {
@@ -117,7 +163,9 @@ export const AppProvider = ({ children }) => {
 
   // Project functions
   const addProject = (project) => {
-    setProjects([...projects, { ...project, id: Date.now().toString() }])
+    // Use default hourly rate from settings if not specified
+    const hourlyRate = project.hourlyRate || userSettings.defaultHourlyRate;
+    setProjects([...projects, { ...project, hourlyRate, id: Date.now().toString() }])
   }
 
   const updateProject = (id, updatedProject) => {
@@ -232,6 +280,11 @@ export const AppProvider = ({ children }) => {
   const updateInvoiceStatus = (id, status) => {
     setInvoices(invoices.map((invoice) => (invoice.id === id ? { ...invoice, status } : invoice)))
   }
+  
+  // User settings functions
+  const updateUserSettings = (newSettings) => {
+    setUserSettings({ ...userSettings, ...newSettings });
+  }
 
   const value = {
     projects,
@@ -239,6 +292,7 @@ export const AppProvider = ({ children }) => {
     timeEntries,
     activeTimer,
     invoices,
+    userSettings,
     addClient,
     updateClient,
     deleteClient,
@@ -254,6 +308,7 @@ export const AppProvider = ({ children }) => {
     deleteTimeEntry,
     addInvoice,
     updateInvoiceStatus,
+    updateUserSettings,
   }
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>

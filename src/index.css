@@ -1,3 +1,27 @@
+/* Add at the beginning of the file */
+:root {
+  --background-color: #f9fafb;
+  --text-color: #333;
+  --border-color: #e5e7eb;
+  --card-background: #fff;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --hover-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --primary-color: #3b82f6;
+  --secondary-color: #4b5563;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark-theme {
+  --background-color: #1a1a1a;
+  --text-color: #e0e0e0;
+  --border-color: #444;
+  --card-background: #2d2d2d;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --hover-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  --primary-color: #60a5fa;
+  --secondary-color: #9ca3af;
+}
+
 /* Basic CSS reset */
 * {
   margin: 0;
@@ -9,8 +33,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans",
     "Helvetica Neue", sans-serif;
   line-height: 1.6;
-  color: #333;
-  background-color: #f9fafb;
+  color: var(--text-color);
+  background-color: var(--background-color);
 }
 
 .app-container {
@@ -24,15 +48,15 @@ body {
   justify-content: space-between;
   align-items: center;
   padding: 1rem 2rem;
-  background-color: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  background-color: var(--card-background);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--card-shadow);
 }
 
 .navbar-brand h1 {
   font-size: 1.5rem;
   margin: 0;
-  color: #3b82f6;
+  color: var(--primary-color);
 }
 
 .navbar-nav {
@@ -46,7 +70,7 @@ body {
 
 .nav-link {
   text-decoration: none;
-  color: #4b5563;
+  color: var(--secondary-color);
   font-weight: 500;
   padding: 0.5rem 0;
   border-bottom: 2px solid transparent;
@@ -54,8 +78,8 @@ body {
 }
 
 .nav-link:hover {
-  color: #3b82f6;
-  border-bottom-color: #3b82f6;
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
 }
 
 .main-content {
@@ -75,28 +99,28 @@ body {
 }
 
 .summary-card {
-  background-color: #fff;
+  background-color: var(--card-background);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .summary-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--hover-shadow);
 }
 
 .summary-card h3 {
   margin-bottom: 0.5rem;
   font-size: 1rem;
-  color: #6b7280;
+  color: var(--secondary-color);
 }
 
 .summary-card p {
   font-size: 1.75rem;
   font-weight: 600;
-  color: #111827;
+  color: var(--text-color);
 }
 
 .dashboard-charts {
@@ -107,16 +131,16 @@ body {
 }
 
 .chart-container {
-  background-color: #fff;
+  background-color: var(--card-background);
   border-radius: 8px;
   padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--card-shadow);
 }
 
 .chart-container h2 {
   margin-bottom: 1rem;
   font-size: 1.25rem;
-  color: #374151;
+  color: var(--text-color);
 }
 
 .dashboard-lists {

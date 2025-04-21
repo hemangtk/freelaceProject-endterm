@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useAppContext } from "../context/AppContext"
 import { format, startOfWeek, endOfWeek, eachDayOfInterval } from "date-fns"
 import { Link } from "react-router-dom"
+import Export from "../components/common/Export"
 import {
   BarChart,
   Bar,
@@ -208,6 +209,13 @@ const Dashboard = () => {
               })}
             </div>
           )}
+        </div>
+
+        <div className="export-section">
+          <div className="list-header">
+            <h2>Export Data</h2>
+          </div>
+          <Export />
         </div>
 
         <div className="recent-activity">
