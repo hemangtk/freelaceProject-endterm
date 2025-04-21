@@ -1,11 +1,13 @@
 "use client"
 
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { useAppContext } from "../context/AppContext"
 
 const Projects = () => {
   const { projects, clients, addProject } = useAppContext()
   const [showForm, setShowForm] = useState(false)
+  const [filter, setFilter] = useState("all")
   const [newProject, setNewProject] = useState({
     name: "",
     clientId: "",
@@ -38,11 +40,19 @@ const Projects = () => {
     setShowForm(false)
   }
 
+  // Filter projects based on status
+  const filteredProjects = projects.filter((project) => {
+    if (filter === "all") return true
+    return project.status === filter
+  })
+
   return (
     <div className="projects-page">
       <div className="projects-header">
         <h1>Projects</h1>
-        <button onClick={() => setShowForm(!showForm)}>{showForm ? "Cancel" : "Add Project"}</button>
+        <button onClick={() => setShowForm(!showForm)} className="btn-primary">
+          {showForm ? "Cancel" : "Add Project"}
+        </button>
       </div>
 
       {showForm && (
@@ -92,24 +102,42 @@ const Projects = () => {
             </select>
           </div>
 
-          <button type="submit">Save Project</button>
+          <button type="submit" className="btn-primary">
+            Save Project
+          </button>
         </form>
       )}
 
+      <div className="projects-filter">
+        <label htmlFor="filter">Filter by status:</label>
+        <select id="filter" value={filter} onChange={(e) => setFilter(e.target.value)}>
+          <option value="all">All Projects</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="on-hold">On Hold</option>
+        </select>
+      </div>
+
       <div className="projects-list">
-        {projects.length === 0 ? (
-          <p>No projects yet. Add your first project!</p>
+        {filteredProjects.length === 0 ? (
+          <p>No projects found. {filter !== "all" ? "Try changing the filter or " : ""}Add your first project!</p>
         ) : (
-          projects.map((project) => (
-            <div key={project.id} className="project-card">
-              <h3>{project.name}</h3>
-              <p>{project.description}</p>
-              <div className="project-details">
-                <span className={`status status-${project.status}`}>{project.status}</span>
-                <span>${project.hourlyRate}/hr</span>
+          filteredProjects.map((project) => {
+            const client = clients.find((c) => c.id === project.clientId)
+            return (
+              <div key={project.id} className="project-card">
+                <Link to={`/projects/${project.id}`} className="project-link">
+                  <h3>{project.name}</h3>
+                  {client && <p className="project-client">Client: {client.name}</p>}
+                  {project.description && <p className="project-description">{project.description}</p>}
+                  <div className="project-details">
+                    <span className={`status status-${project.status}`}>{project.status}</span>
+                    <span>${project.hourlyRate}/hr</span>
+                  </div>
+                </Link>
               </div>
-            </div>
-          ))
+            )
+          })
         )}
       </div>
     </div>

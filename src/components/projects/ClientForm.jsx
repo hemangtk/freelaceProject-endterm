@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useAppContext } from "../../context/AppContext"
 
-const ClientForm = ({ onClose }) => {
+const ClientForm = ({ client, onClose }) => {
   const { addClient, updateClient } = useAppContext()
   const [formData, setFormData] = useState({
     name: "",
