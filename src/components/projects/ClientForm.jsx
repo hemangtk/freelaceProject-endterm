@@ -1,128 +1,91 @@
-import React, { useState } from 'react';
+"use client"
 
-function ClientForm({ onSubmit, initialValues = {} }) {
+import { useState } from "react"
+import { useAppContext } from "../../context/AppContext"
+
+const ClientForm = ({ onClose }) => {
+  const { addClient, updateClient } = useAppContext()
   const [formData, setFormData] = useState({
-    name: initialValues.name || '',
-    email: initialValues.email || '',
-    phone: initialValues.phone || '',
-    company: initialValues.company || '',
-    notes: initialValues.notes || '',
-  });
-  
-  const [errors, setErrors] = useState({});
-  
-  const handleChange = (e) => {
-    const { name, value } = e.target;
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  })
+
+  useEffect(() => {
+    if (client) {
+      setFormData({
+        name: client.name || "",
+        email: client.email || "",
+        phone: client.phone || "",
+        address: client.address || "",
+      })
+    }
+  }, [client])
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target
     setFormData({
       ...formData,
-      [name]: value
-    });
-    
-    // Clear error when field is edited
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: ''
-      });
-    }
-  };
-  
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!formData.name.trim()) {
-      newErrors.name = 'Client name is required';
-    }
-    
-    if (formData.email && !isValidEmail(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-  
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-  
+      [name]: value,
+    })
+  }
+
   const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (validateForm()) {
-      onSubmit(formData);
+    e.preventDefault()
+
+    if (client) {
+      // Update existing client
+      updateClient(client.id, formData)
+    } else {
+      // Add new client
+      addClient(formData)
     }
-  };
-  
+    setFormData({
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+    })
+
+    if (onClose) onClose()
+  }
+
   return (
     <form onSubmit={handleSubmit} className="client-form">
+      <h2>{client ? "Edit Client" : "Add New Client"}</h2>
+
       <div className="form-group">
-        <label htmlFor="name">Client Name *</label>
-        <input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          className={errors.name ? 'error' : ''}
-        />
-        {errors.name && <span className="error-message">{errors.name}</span>}
+        <label htmlFor="name">Client Name</label>
+        <input type="text" id="name" name="name" value={formData.name} onChange={handleInputChange} required />
       </div>
-      
-      <div className="form-group">
-        <label htmlFor="company">Company</label>
-        <input
-          type="text"
-          id="company"
-          name="company"
-          value={formData.company}
-          onChange={handleChange}
-        />
-      </div>
-      
+
       <div className="form-group">
         <label htmlFor="email">Email</label>
-        <input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          className={errors.email ? 'error' : ''}
-        />
-        {errors.email && <span className="error-message">{errors.email}</span>}
+        <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} required />
       </div>
-      
+
       <div className="form-group">
         <label htmlFor="phone">Phone</label>
-        <input
-          type="tel"
-          id="phone"
-          name="phone"
-          value={formData.phone}
-          onChange={handleChange}
-        />
+        <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleInputChange} />
       </div>
-      
+
       <div className="form-group">
-        <label htmlFor="notes">Notes</label>
-        <textarea
-          id="notes"
-          name="notes"
-          value={formData.notes}
-          onChange={handleChange}
-          rows="3"
-        />
+        <label htmlFor="address">Address</label>
+        <textarea id="address" name="address" value={formData.address} onChange={handleInputChange} />
       </div>
-      
+
       <div className="form-actions">
-        <button type="submit" className="btn btn-primary">
-          {initialValues.id ? 'Update Client' : 'Add Client'}
+        <button type="button" onClick={onClose} className="btn-secondary">
+          Cancel
+        </button>
+        <button type="submit" className="btn-primary">
+          {client ? "Update Client" : "Save Client"}
         </button>
       </div>
     </form>
-  );
+  )
 }
 
-export default ClientForm;
+export default ClientForm
+
