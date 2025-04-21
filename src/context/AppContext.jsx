@@ -24,44 +24,76 @@ export const AppProvider = ({ children }) => {
     const storedInvoices = localStorage.getItem("invoices")
 
     if (storedClients) {
-      setClients(JSON.parse(storedClients))
+      try {
+        setClients(JSON.parse(storedClients))
+      } catch (error) {
+        console.error("Error parsing clients from localStorage:", error)
+        setClients([])
+      }
     }
 
     if (storedProjects) {
-      setProjects(JSON.parse(storedProjects))
+      try {
+        setProjects(JSON.parse(storedProjects))
+      } catch (error) {
+        console.error("Error parsing projects from localStorage:", error)
+        setProjects([])
+      }
     }
 
     if (storedTimeEntries) {
-      // Convert string dates back to Date objects
-      const parsedEntries = JSON.parse(storedTimeEntries)
-      const formattedEntries = parsedEntries.map((entry) => ({
-        ...entry,
-        startTime: new Date(entry.startTime),
-        endTime: new Date(entry.endTime),
-      }))
-      setTimeEntries(formattedEntries)
+      try {
+        // Convert string dates back to Date objects
+        const parsedEntries = JSON.parse(storedTimeEntries)
+        const formattedEntries = parsedEntries.map((entry) => ({
+          ...entry,
+          startTime: new Date(entry.startTime),
+          endTime: entry.endTime ? new Date(entry.endTime) : null,
+        }))
+        setTimeEntries(formattedEntries)
+      } catch (error) {
+        console.error("Error parsing timeEntries from localStorage:", error)
+        setTimeEntries([])
+      }
     }
 
     if (storedInvoices) {
-      setInvoices(JSON.parse(storedInvoices))
+      try {
+        const parsedInvoices = JSON.parse(storedInvoices)
+        setInvoices(parsedInvoices)
+      } catch (error) {
+        console.error("Error parsing invoices from localStorage:", error)
+        setInvoices([])
+      }
     }
   }, [])
 
-  // Save data to localStorage whenever it changes
+  // Save clients to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("clients", JSON.stringify(clients))
+    if (clients.length > 0) {
+      localStorage.setItem("clients", JSON.stringify(clients))
+    }
   }, [clients])
 
+  // Save projects to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("projects", JSON.stringify(projects))
+    if (projects.length > 0) {
+      localStorage.setItem("projects", JSON.stringify(projects))
+    }
   }, [projects])
 
+  // Save timeEntries to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("timeEntries", JSON.stringify(timeEntries))
+    if (timeEntries.length > 0) {
+      localStorage.setItem("timeEntries", JSON.stringify(timeEntries))
+    }
   }, [timeEntries])
 
+  // Save invoices to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("invoices", JSON.stringify(invoices))
+    if (invoices.length > 0) {
+      localStorage.setItem("invoices", JSON.stringify(invoices))
+    }
   }, [invoices])
 
   // Client functions
