@@ -2,12 +2,10 @@
 
 import { useState } from "react"
 import { useAppContext } from "../context/AppContext"
-import ClientForm from "../components/projects/ClientForm"
 
 const Projects = () => {
   const { projects, clients, addProject } = useAppContext()
-  const [showProjectForm, setShowProjectForm] = useState(false)
-  const [showClientForm, setShowClientForm] = useState(false)
+  const [showForm, setShowForm] = useState(false)
   const [newProject, setNewProject] = useState({
     name: "",
     clientId: "",
@@ -37,32 +35,17 @@ const Projects = () => {
       hourlyRate: "",
       status: "active",
     })
-    setShowProjectForm(false)
+    setShowForm(false)
   }
 
   return (
     <div className="projects-page">
       <div className="projects-header">
         <h1>Projects</h1>
-        <div className="header-actions">
-          <button onClick={() => setShowClientForm(true)} className="secondary-button">
-            Add Client
-          </button>
-          <button onClick={() => setShowProjectForm(!showProjectForm)}>
-            {showProjectForm ? "Cancel" : "Add Project"}
-          </button>
-        </div>
+        <button onClick={() => setShowForm(!showForm)}>{showForm ? "Cancel" : "Add Project"}</button>
       </div>
 
-      {showClientForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <ClientForm onClose={() => setShowClientForm(false)} />
-          </div>
-        </div>
-      )}
-
-      {showProjectForm && (
+      {showForm && (
         <form onSubmit={handleSubmit} className="project-form">
           <div className="form-group">
             <label htmlFor="name">Project Name</label>
@@ -117,20 +100,16 @@ const Projects = () => {
         {projects.length === 0 ? (
           <p>No projects yet. Add your first project!</p>
         ) : (
-          projects.map((project) => {
-            const client = clients.find((c) => c.id === project.clientId)
-            return (
-              <div key={project.id} className="project-card">
-                <h3>{project.name}</h3>
-                <p className="client-name">{client ? client.name : "Unknown Client"}</p>
-                <p className="project-description">{project.description}</p>
-                <div className="project-details">
-                  <span className={`status status-${project.status}`}>{project.status}</span>
-                  <span>${project.hourlyRate}/hr</span>
-                </div>
+          projects.map((project) => (
+            <div key={project.id} className="project-card">
+              <h3>{project.name}</h3>
+              <p>{project.description}</p>
+              <div className="project-details">
+                <span className={`status status-${project.status}`}>{project.status}</span>
+                <span>${project.hourlyRate}/hr</span>
               </div>
-            )
-          })
+            </div>
+          ))
         )}
       </div>
     </div>
