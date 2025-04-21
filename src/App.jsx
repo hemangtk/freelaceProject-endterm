@@ -4,6 +4,7 @@ import Projects from "./pages/Projects"
 import Clients from "./pages/Clients"
 import TimeTracker from "./pages/TimeTracker"
 import Invoices from "./pages/Invoices"
+import Reports from "./pages/Reports"
 import ProjectDetails from "./pages/ProjectDetails"
 import Navbar from "./components/common/Navbar"
 import { AppProvider } from "./context/AppContext"
@@ -22,6 +23,7 @@ function App() {
               <Route path="/clients" element={<Clients />} />
               <Route path="/time-tracker" element={<TimeTracker />} />
               <Route path="/invoices" element={<Invoices />} />
+              <Route path="/reports" element={<Reports />} />
             </Routes>
           </main>
         </div>
