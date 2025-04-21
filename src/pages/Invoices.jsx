@@ -3,11 +3,12 @@
 import { useState } from "react"
 import { useAppContext } from "../context/AppContext"
 import { format } from "date-fns"
+import InvoiceView from "../components/invoices/InvoiceView"
 
 const Invoices = () => {
-  const { projects, clients, timeEntries } = useAppContext()
-  const [invoices, setInvoices] = useState([])
+  const { projects, clients, timeEntries, addInvoice, invoices, updateInvoiceStatus } = useAppContext()
   const [showForm, setShowForm] = useState(false)
+  const [viewInvoice, setViewInvoice] = useState(null)
   const [newInvoice, setNewInvoice] = useState({
     clientId: "",
     projectId: "",
@@ -54,7 +55,7 @@ const Invoices = () => {
       entries: relevantEntries,
     }
 
-    setInvoices([...invoices, invoice])
+    addInvoice(invoice)
     setNewInvoice({
       clientId: "",
       projectId: "",
@@ -63,6 +64,18 @@ const Invoices = () => {
       notes: "",
     })
     setShowForm(false)
+  }
+
+  const handleStatusChange = (id, status) => {
+    updateInvoiceStatus(id, status)
+  }
+
+  const handleViewInvoice = (invoice) => {
+    setViewInvoice(invoice)
+  }
+
+  const handleCloseInvoice = () => {
+    setViewInvoice(null)
   }
 
   return (
@@ -133,41 +146,56 @@ const Invoices = () => {
         </form>
       )}
 
-      <div className="invoices-list">
-        {invoices.length === 0 ? (
-          <p>No invoices yet. Create your first invoice!</p>
-        ) : (
-          <table className="invoices-table">
-            <thead>
-              <tr>
-                <th>Invoice #</th>
-                <th>Client</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoices.map((invoice) => {
-                const client = clients.find((c) => c.id === invoice.clientId)
-                return (
-                  <tr key={invoice.id}>
-                    <td>INV-{invoice.id.substring(0, 6)}</td>
-                    <td>{client ? client.name : "Unknown Client"}</td>
-                    <td>{format(new Date(invoice.createdAt), "MMM dd, yyyy")}</td>
-                    <td>${invoice.totalAmount.toFixed(2)}</td>
-                    <td>{invoice.status}</td>
-                    <td>
-                      <button>View</button>
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        )}
-      </div>
+      {viewInvoice ? (
+        <InvoiceView invoice={viewInvoice} onClose={handleCloseInvoice} />
+      ) : (
+        <div className="invoices-list">
+          {invoices.length === 0 ? (
+            <p>No invoices yet. Create your first invoice!</p>
+          ) : (
+            <table className="invoices-table">
+              <thead>
+                <tr>
+                  <th>Invoice #</th>
+                  <th>Client</th>
+                  <th>Date</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {invoices.map((invoice) => {
+                  const client = clients.find((c) => c.id === invoice.clientId)
+                  return (
+                    <tr key={invoice.id}>
+                      <td>INV-{invoice.id.substring(0, 6)}</td>
+                      <td>{client ? client.name : "Unknown Client"}</td>
+                      <td>{format(new Date(invoice.createdAt), "MMM dd, yyyy")}</td>
+                      <td>${invoice.totalAmount.toFixed(2)}</td>
+                      <td>
+                        <select
+                          value={invoice.status}
+                          onChange={(e) => handleStatusChange(invoice.id, e.target.value)}
+                          className={`status-${invoice.status.toLowerCase()}`}
+                        >
+                          <option value="draft">Draft</option>
+                          <option value="sent">Sent</option>
+                          <option value="paid">Paid</option>
+                          <option value="overdue">Overdue</option>
+                        </select>
+                      </td>
+                      <td>
+                        <button onClick={() => handleViewInvoice(invoice)}>View</button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+      )}
     </div>
   )
 }
